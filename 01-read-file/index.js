@@ -1,6 +1,5 @@
 const fs = require('fs');
 const path = require('path');
-const stream = require('stream');
 
 const resolvedPath = path.resolve('01-read-file', 'text.txt');
 

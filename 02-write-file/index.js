@@ -3,8 +3,8 @@ const path = require('path');
 const readline = require('readline');
 const process = require('process');
 
-// create a path for the future input file and the file itself
 const resolvedPath = path.resolve('02-write-file', 'input.txt');
+console.log(resolvedPath);
 
 let writeableStream = fs.createWriteStream(resolvedPath);
 
@@ -18,10 +18,10 @@ function waitForUserInput() {
     if (answer.includes("exit")) {
 
       //write to a file minus last 4 characters;
-      writeableStream.write(answer.substring(0, answer.length - 4));      
+      writeableStream.write('\n' + answer.substring(0, answer.length - 4));      
       rl.close();
     } else {
-      writeableStream.write(answer);
+      writeableStream.write('\n' + answer);
       waitForUserInput();
     }
     rl.on("close", function() {
