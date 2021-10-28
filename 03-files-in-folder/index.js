@@ -16,7 +16,7 @@ fs.readdir(resolvedPath, (err, files) => {
       }
       if (stats.isFile()) {
         console.log(path.basename(file, path.extname(fileName)) + ' - ' 
-          + path.extname(fileName) + ' - ' + stats.size);
+          + path.extname(fileName).substring(1) + ' - ' + Math.floor(stats.size/1024) + 'kb');
       }
     })
   }
