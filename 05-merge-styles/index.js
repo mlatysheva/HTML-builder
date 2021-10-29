@@ -1,8 +1,6 @@
 const fs = require('fs');
 const path = require('path');
 
-let stylesArray = new Array();
-
 const pathToStyles = path.resolve(__dirname, 'styles');
 const pathToBundle = path.join(__dirname, 'project-dist', 'bundle.css');
 
@@ -10,6 +8,8 @@ const writeStream = fs.createWriteStream(pathToBundle);
 
 fs.readdir(pathToStyles, (err, files) => {
   if (err) throw err;
+
+  let stylesArray = new Array();
     
   for (let file of files) {
     let fileName = path.join(pathToStyles, file);
