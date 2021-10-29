@@ -3,14 +3,14 @@ const fs = require('fs');
 
 const resolvedPath = path.resolve(__dirname);
 
-const folderName = path.join(resolvedPath, 'files-copy');
+const filesCopyFolderName = path.join(resolvedPath, 'files-copy');
 const filesFolderName = path.join(resolvedPath, 'files');
 
 // check if the folder exists, if not - create the folder
-fs.access(folderName, (error) => {
+fs.access(filesCopyFolderName, (error) => {
   if (error) {
     console.log("Directory does not exist.");
-    fs.mkdir(folderName, { recursive: true }, (err) => {
+    fs.mkdir(filesCopyFolderName, { recursive: true }, (err) => {
       if (err) throw err;
     });
   } else {
@@ -23,7 +23,7 @@ fs.readdir(filesFolderName, (err, files) => {
     
   for (let file of files) {
     let fileSorceName = path.join(resolvedPath, 'files', file);
-    let fileDestinationName = path.join(folderName, file);
+    let fileDestinationName = path.join(filesCopyFolderName, file);
 
     fs.copyFile(fileSorceName, fileDestinationName, (err) => {
       if (err) throw err;
