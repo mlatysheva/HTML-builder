@@ -3,7 +3,6 @@ const path = require('path');
 const readline = require('readline');
 
 const projectDistPath = path.join(__dirname, 'project-dist');
-console.log(projectDistPath);
 const pathToTemplate = path.join(__dirname, 'template.html');
 const newIndexPath = path.join(projectDistPath, 'index.html');
 
@@ -11,7 +10,7 @@ const newIndexPath = path.join(projectDistPath, 'index.html');
 fs.access(projectDistPath, (error) => {
   if (error) {
     console.log("Directory does not exist.");
-    fs.mkdirSync(projectDistPath, { recursive: true }, (err) => {
+    fs.mkdir(projectDistPath, { recursive: true }, (err) => {
       if (err) throw err;
     });
   } else {
@@ -39,46 +38,48 @@ fs.access(projectDistPath, (error) => {
       })      
     }
     else {
-      writeableStream.write('\n' + line);
+      writeableStream.write(line + '\n');
     }
   });
+  // merge all styles into project-dist/style.css
+
+  const pathToStyles = path.resolve(__dirname, 'styles');
+  const pathToBundle = path.join(__dirname, 'project-dist', 'style.css');
+
+  const writeStream = fs.createWriteStream(pathToBundle);
+  console.log(pathToBundle);
+
+  fs.readdir(pathToStyles, (err, files) => {
+    if (err) throw err;
+
+    for (let file of files) {
+      let fileName = path.join(pathToStyles, file);
+
+      fs.stat(fileName, (err, stats) => {
+        if (err) {
+          console.error(err)
+          return;
+        }
+        if (stats.isFile() && path.extname(fileName) == '.css') {
+          const instream = fs.createReadStream(fileName, "utf-8");
+          instream.on("data", (chunk) => { 
+            writeStream.write(`${chunk}\n`, (err) => {
+              // if (err) throw err;
+              writeStream.end();
+            })
+          })   
+        }
+      })
+    }
+    console.log(`Bundle.css is successfully compiled in: ${pathToBundle}`);
+  })
 })
 
-// merge all styles into project-dist/style.css
 
-const pathToStyles = path.resolve(__dirname, 'styles');
-const pathToBundle = path.join(__dirname, 'project-dist', 'style.css');
-
-const originalAssetsFolder = path.join(__dirname, 'assets');
-const distAssetsFolder = path.join(__dirname, 'project-dist', 'assets');
-
-const writeStream = fs.createWriteStream(pathToBundle);
-
-fs.readdir(pathToStyles, (err, files) => {
-  if (err) throw err;
-
-  for (let file of files) {
-    let fileName = path.join(pathToStyles, file);
-
-    fs.stat(fileName, (err, stats) => {
-      if (err) {
-        console.error(err)
-        return;
-      }
-      if (stats.isFile() && path.extname(fileName) == '.css') {
-        const instream = fs.createReadStream(fileName, "utf-8");
-        instream.on("data", (chunk) => { 
-          writeStream.write(`${chunk}\n`, (err) => {
-            writeStream.end();
-          })
-        })   
-      }
-    })
-  }
-  console.log(`Bundle.css is successfully compiled in: ${pathToBundle}`);
-})
 
 // // copy the /assets folder to /project-dist
+// const originalAssetsFolder = path.join(__dirname, 'assets');
+// const distAssetsFolder = path.join(__dirname, 'project-dist', 'assets');
 // fs.access(distAssetsFolder, (error) => {
 //   if (error) {
 //     console.log("Directory does not exist.");
