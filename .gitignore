@@ -1,4 +1,6 @@
 input.txt
+06-build-page/index_old.js
+.DS_Store
 # Logs
 logs
 *.log
