@@ -1,19 +1,19 @@
-async function mergeStyles() {
+const fs = require('fs');
+const path = require('path');
 
-  const fs = require('fs');
-  const path = require('path');
+const pathToStyles = path.resolve(__dirname, 'styles');
+const pathToBundle = path.join(__dirname, 'project-dist', 'bundle.css');
 
-  const pathToStyles = path.resolve(__dirname, 'styles');
-  const pathToBundle = path.join(__dirname, 'project-dist', 'bundle.css');
+async function mergeStyles(originalFolder, destinationFile) {
+  
+  const writeStream = fs.createWriteStream(destinationFile);
 
-  const writeStream = fs.createWriteStream(pathToBundle);
-
-  await fs.readdir(pathToStyles, (err, files) => {
+  await fs.readdir(originalFolder, (err, files) => {
     if (err) throw err;
        
     for (let file of files) {
       
-      let fileName = path.join(pathToStyles, file);
+      let fileName = path.join(originalFolder, file);
 
       fs.stat(fileName, (err, stats) => {
         let stylesArray = new Array();
@@ -32,7 +32,7 @@ async function mergeStyles() {
         }
       })
     }
-    console.log(`Bundle.css is successfully compiled in: ${pathToBundle}`);
+    console.log(`Bundle.css is successfully compiled in: ${destinationFile}`);
   })
 }
-mergeStyles();
+mergeStyles(pathToStyles, pathToBundle);

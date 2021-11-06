@@ -1,36 +1,40 @@
-async function copyDirectory() {
-  const path = require('path');
-  const fs = require('fs');
+const path = require('path');
+const fs = require('fs');
+const fsPromises = require('fs/promises');
 
-  const resolvedPath = path.resolve(__dirname);
-  const filesCopyFolderName = path.join(resolvedPath, 'files-copy');
-  const filesFolderName = path.join(resolvedPath, 'files');
+const filesFolderName = path.join(__dirname, 'files');
+const filesCopyFolderName = path.join(__dirname, 'files-copy');
+
+async function copyFolder(originalFolder, destinationFolder) {
+
+  await fsPromises.mkdir(destinationFolder, { recursive: true }, (err) => {
+    if (err) throw err;
+    console.log('The destination folder is created or already exists');
+  });
+
+  await fs.readdir(destinationFolder, (err, files) => {
+    if (err) throw err;
   
-  // check if the folder exists, if not - create the folder
-  await fs.access(filesCopyFolderName, (error) => {
-    if (error) {
-      console.log("Directory does not exist.");
-      fs.mkdir(filesCopyFolderName, { recursive: true }, (err) => {
-        if (err) throw err;
-      });
-    } else {
-      console.log("Directory exists.");
+    for (let file of files) {
+      fs.unlink(path.join(destinationFolder, file), err => {
+        if (err) throw err;         
+      });      
     }
-  })
+    console.log('The existing files were successfully deleted.');
+  });
 
-  await fs.readdir(filesFolderName, (err, files) => {
+  await fs.readdir(originalFolder, (err, files) => {
     if (err) throw err;
       
     for (let file of files) {
-      let fileSorceName = path.join(resolvedPath, 'files', file);
-      let fileDestinationName = path.join(filesCopyFolderName, file);
+      let fileOriginalName = path.join(originalFolder, file);
+      let fileDestinationName = path.join(destinationFolder, file);
 
-      fs.copyFile(fileSorceName, fileDestinationName, (err) => {
+      fs.copyFile(fileOriginalName, fileDestinationName, (err) => {
         if (err) throw err;
       }); 
     }
-    console.log('Files have been successfully copied to files-copy'); 
+    console.log(`Files have been successfully copied to ${destinationFolder}`); 
   })
 }
-
-copyDirectory();
+copyFolder(filesFolderName, filesCopyFolderName);
