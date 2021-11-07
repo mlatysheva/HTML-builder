@@ -26,7 +26,7 @@ async function mergeStyles(originalFolder, destinationFile) {
           instream.on("data", (chunk) => { 
             stylesArray.push(chunk);
             stylesArray.forEach(value => writeStream.write(`${value}\n`, (err) => {
-              writeStream.end();
+              // writeStream.end();
             }));                 
           });
         }
