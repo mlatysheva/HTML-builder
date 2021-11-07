@@ -7,12 +7,9 @@ const filesCopyFolderName = path.join(__dirname, 'files-copy');
 
 async function copyFolder(originalFolder, destinationFolder) {
 
-  await fsPromises.mkdir(destinationFolder, { recursive: true }, (err) => {
-    if (err) throw err;
-    console.log('The destination folder is created or already exists');
-  });
+  await fsPromises.mkdir(destinationFolder, { recursive: true });
 
-  await fs.readdir(destinationFolder, (err, files) => {
+  await fs.readdir(destinationFolder, { recursive: true }, (err, files) => {
     if (err) throw err;
   
     for (let file of files) {
@@ -20,21 +17,19 @@ async function copyFolder(originalFolder, destinationFolder) {
         if (err) throw err;         
       });      
     }
-    console.log('The existing files were successfully deleted.');
+    console.log('Any existing files were successfully deleted.');
   });
 
-  await fs.readdir(originalFolder, (err, files) => {
-    if (err) throw err;
-      
-    for (let file of files) {
-      let fileOriginalName = path.join(originalFolder, file);
-      let fileDestinationName = path.join(destinationFolder, file);
+  let items = await fsPromises.readdir(originalFolder, { withFileTypes: true });
 
-      fs.copyFile(fileOriginalName, fileDestinationName, (err) => {
-        if (err) throw err;
-      }); 
-    }
-    console.log(`Files have been successfully copied to ${destinationFolder}`); 
-  })
+  for (let item of items) {
+    let originalPath = path.join(originalFolder, item.name);
+    let destinationPath = path.join(destinationFolder, item.name);
+
+    item.isDirectory() ?
+        await copyFolder(originalPath, destinationPath) :
+        await fsPromises.copyFile(originalPath, destinationPath);
+  }
+  console.log(`Files have been successfully copied to ${destinationFolder}`); 
 }
 copyFolder(filesFolderName, filesCopyFolderName);
