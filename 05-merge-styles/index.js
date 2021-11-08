@@ -30,9 +30,10 @@ async function mergeStyles(originalFolder, destinationFile) {
             }));                 
           });
         }
+        console.log(`Bundle.css is successfully compiled in: ${destinationFile}`);
       })
     }
-    console.log(`Bundle.css is successfully compiled in: ${destinationFile}`);
+    
   })
 }
 mergeStyles(pathToStyles, pathToBundle);
