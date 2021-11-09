@@ -17,10 +17,14 @@ function waitForUserInput() {
     if (answer.includes('exit')) {
 
       //write to a file minus last 4 characters;
-      writeableStream.write('\n' + answer.substring(0, answer.length - 4));      
+      writeableStream.write(answer.substring(0, answer.length - 4) + '\n');      
       rl.close();
+      rl.on('close', function() {
+        console.log('Good-bye!');
+        process.exit(0);
+      });
     } else {
-      writeableStream.write('\n' + answer);
+      writeableStream.write(answer + '\n');
       waitForUserInput();
     }
     rl.on('close', function() {
